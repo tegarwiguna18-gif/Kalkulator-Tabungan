@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Tabungan | Creator Tegar Wiguna</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#f59e0b',
+                        secondary: '#3b82f6',
+                        emas: '#d97706',
+                        aman: '#10b981',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .bg-gradient-tabungan {
+                background: linear-gradient(135deg, #f59e0b 0%, #3b82f6 100%);
+            }
+            .card-shadow {
+                box-shadow: 0 10px 40px rgba(245, 158, 11, 0.25);
+            }
+            .input-style {
+                @apply w-full px-4 py-3 rounded-xl border border-amber-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all;
+            }
+            .btn-gradient {
+                background: linear-gradient(90deg, #f59e0b 0%, #3b82f6 100%);
+                transition: all 0.3s ease;
+            }
+            .btn-gradient:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(245, 158, 11, 0.35);
+            }
+            .logo-tw {
+                background: linear-gradient(135deg, #f59e0b, #3b82f6);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            .uang {
+                font-variant-numeric: tabular-nums;
+            }
+        }
+    </style>
+
+    <!-- Meta Tag Berbagi -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Kalkulator Tabungan | Creator Tegar Wiguna">
+    <meta property="og:description" content="Rencanakan target tabunganmu, hitung berapa lama dan berapa yang harus kamu sisihkan setiap hari/bulan!">
+    <meta property="og:image" content="https://i.imgur.com/8Z7XQfL.png">
+    <meta name="twitter:card" content="summary_large_image">
+</head>
+<body class="min-h-screen bg-gradient-tabungan flex flex-col items-center justify-center p-4 font-sans">
+    
+    <div class="w-full max-w-xl">
+        <!-- Header dengan Logo -->
+        <div class="text-center mb-6 text-white">
+            <div class="flex items-center justify-center gap-3 mb-3">
+                <div class="bg-white p-2 rounded-full shadow-lg">
+                    <span class="text-2xl font-extrabold logo-tw">TW</span>
+                </div>
+            </div>
+            <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mb-2 flex items-center justify-center gap-2">
+                <i class="fa fa-money"></i> Kalkulator Tabungan
+            </h1>
+            <p class="text-amber-100">Rencanakan masa depanmu dengan perencanaan yang tepat</p>
+        </div>
+
+        <!-- Konten Utama -->
+        <div class="bg-white rounded-2xl p-6 md:p-8 card-shadow">
+            <!-- Form Input -->
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Target Uang yang Ingin Dicapai (Rp)</label>
+                    <input type="number" id="target" class="input-style text-lg uang" placeholder="Contoh: 5000000" min="1000" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Sisa Uang yang Sudah Terkumpul (Rp)</label>
+                    <input type="number" id="terkumpul" class="input-style text-lg uang" placeholder="Contoh: 500000" min="0" value="0">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Cara Menabung</label>
+                    <select id="jenis" class="input-style">
+                        <option value="bulanan">Sisihkan Uang Setiap Bulan</option>
+                        <option value="harian">Sisihkan Uang Setiap Hari</option>
+                        <option value="waktu">Ingin Mencapai Target Dalam Waktu Tertentu</option>
+                    </select>
+                </div>
+                <div id="inputNilai">
+                    <label class="block text-gray-700 font-medium mb-2">Jumlah Uang yang Bisa Disisihkan (Rp)</label>
+                    <input type="number" id="nilai" class="input-style text-lg uang" placeholder="Contoh: 200000" min="1000" required>
+                </div>
+                <div id="inputWaktu" class="hidden">
+                    <label class="block text-gray-700 font-medium mb-2">Batas Waktu Pencapaian (Bulan)</label>
+                    <input type="number" id="waktu" class="input-style text-lg" placeholder="Contoh: 12" min="1" required>
+                </div>
+            </div>
+
+            <button id="hitungBtn" class="btn-gradient w-full py-3 px-6 text-white font-semibold rounded-xl text-lg">
+                <i class="fa fa-calculator mr-2"></i> Hitung Rencana Tabungan
+            </button>
+
+            <!-- Hasil Perhitungan -->
+            <div id="hasil" class="hidden mt-8">
+                <div class="border-t border-amber-100 pt-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4 text-center">Hasil Perencanaan</h3>
+                    
+                    <div class="space-y-3 text-gray-700">
+                        <div class="flex justify-between p-3 bg-amber-50 rounded-lg">
+                            <span>Total yang Harus Dicapai:</span>
+                            <span id="hasilTarget" class="font-bold uang text-emerald-700">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between p-3 bg-blue-50 rounded-lg">
+                            <span>Masih Kurang:</span>
+                            <span id="hasilKurang" class="font-bold uang text-red-600">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between p-3 bg-green-50 rounded-lg">
+                            <span id="labelTambahan">Waktu yang Dibutuhkan:</span>
+                            <span id="hasilTambahan" class="font-bold text-slate-800">-</span>
+                        </div>
+                        <div class="flex justify-between p-3 bg-purple-50 rounded-lg">
+                            <span id="labelSatuan">Jumlah Tabungan:</span>
+                            <span id="hasilSatuan" class="font-bold uang text-purple-700">-</span>
+                        </div>
+                    </div>
+
+                    <div id="pesanSaran" class="mt-6 p-4 rounded-xl bg-emerald-50 text-emerald-800 text-center"></div>
+                </div>
+
+                <!-- Tombol Bagikan WhatsApp -->
+                <div class="flex gap-2 justify-center mt-8 mb-4">
+                    <a href="https://api.whatsapp.com/send?text=Rencanakan%20tabunganmu%20bersama%20Kalkulator%20Tabungan:%20https://tegarwiguna18-gif.github.io/Kalkulator-Tabungan/" target="_blank" rel="noopener noreferrer" class="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-3 rounded-xl shadow-md transition-all">
+                        <i class="fa fa-whatsapp mr-2"></i>Bagikan ke WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer dengan Nama Creator -->
+        <div class="text-center mt-6 text-white/90 text-sm space-y-1">
+            <p class="font-medium">Dibuat oleh: Creator Tegar Wiguna</p>
+            <p>© 2026 Kalkulator Tabungan | Semua Hak Dilindungi</p>
+            <p class="text-xs opacity-75 mt-1">*Hasil sebagai referensi perencanaan keuangan pribadi</p>
+        </div>
+    </div>
+
+    <script>
+        const hitungBtn = document.getElementById('hitungBtn');
+        const jenisSelect = document.getElementById('jenis');
+        const inputNilaiDiv = document.getElementById('inputNilai');
+        const inputWaktuDiv = document.getElementById('inputWaktu');
+        const hasilDiv = document.getElementById('hasil');
+
+        // Elemen hasil
+        const hasilTargetEl = document.getElementById('hasilTarget');
+        const hasilKurangEl = document.getElementById('hasilKurang');
+        const labelTambahanEl = document.getElementById('labelTambahan');
+        const hasilTambahanEl = document.getElementById('hasilTambahan');
+        const labelSatuanEl = document.getElementById('labelSatuan');
+        const hasilSatuanEl = document.getElementById('hasilSatuan');
+        const pesanSaranEl = document.getElementById('pesanSaran');
+
+        // Ubah tampilan sesuai pilihan
+        jenisSelect.addEventListener('change', () => {
+            if(jenisSelect.value === 'waktu') {
+                inputNilaiDiv.classList.add('hidden');
+                inputWaktuDiv.classList.remove('hidden');
+            } else {
+                inputNilaiDiv.classList.remove('hidden');
+                inputWaktuDiv.classList.add('hidden');
+            }
+        });
+
+        hitungBtn.addEventListener('click', hitungTabungan);
+
+        function formatUang(angka) {
+            return 'Rp ' + angka.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        function hitungTabungan() {
+            const target = parseFloat(document.getElementById('target').value);
+            const terkumpul = parseFloat(document.getElementById('terkumpul').value) || 0;
+            const jenis = jenisSelect.value;
+            const kurang = Math.max(0, target - terkumpul);
+
+            if (!target || target <= 0) {
+                alert('Silakan masukkan target uang yang ingin dicapai!');
+                return;
+            }
+
+            hasilDiv.classList.remove('hidden');
+            hasilTargetEl.textContent = formatUang(target);
+            hasilKurangEl.textContent = formatUang(kurang);
+
+            if(kurang === 0) {
+                pesanSaranEl.textContent = "🎉 Selamat! Kamu sudah mencapai target tabunganmu!";
+                labelTambahanEl.textContent = "Status:";
+                hasilTambahanEl.textContent = "Sudah Tercapai";
+                labelSatuanEl.textContent = "Sisa Target:";
+                hasilSatuanEl.textContent = formatUang(0);
+                return;
+            }
+
+            let pesan = '';
+            if(jenis === 'bulanan') {
+                const tabungan = parseFloat(document.getElementById('nilai').value);
+                if(!tabungan || tabungan <=0) { alert('Masukkan jumlah tabungan bulanan!'); return; }
+                const bulan = Math.ceil(kurang / tabungan);
+                const tahun = Math.floor(bulan / 12);
+                const sisaBulan = bulan % 12;
+                
+                labelTambahanEl.textContent = "Waktu Dibutuhkan:";
+                hasilTambahanEl.textContent = tahun > 0 ? `${tahun} Tahun ${sisaBulan} Bulan` : `${bulan} Bulan`;
+                labelSatuanEl.textContent = "Tabungan/Bulan:";
+                hasilSatuanEl.textContent = formatUang(tabungan);
+                pesan = "💪 Konsisten menabung setiap bulan pasti tercapai. Mulai sekarang ya!";
+            } 
+            else if(jenis === 'harian') {
+                const tabungan = parseFloat(document.getElementById('nilai').value);
+                if(!tabungan || tabungan <=0) { alert('Masukkan jumlah tabungan harian!'); return; }
+                const hari = Math.ceil(kurang / tabungan);
+                const bulan = Math.round(hari / 30.44);
+                
+                labelTambahanEl.textContent = "Waktu Dibutuhkan:";
+                hasilTambahanEl.textContent = `${hari} Hari (sekitar ${bulan} bulan)`;
+                labelSatuanEl.textContent = "Tabungan/Hari:";
+                hasilSatuanEl.textContent = formatUang(tabungan);
+                pesan = "✨ Menabung sedikit demi sedikit setiap hari akan menjadi besar nantinya!";
+            }
+            else if(jenis === 'waktu') {
+                const waktuBulan = parseFloat(document.getElementById('waktu').value);
+                if(!waktuBulan || waktuBulan <=0) { alert('Masukkan batas waktu dalam bulan!'); return; }
+                const tabunganBulan = Math.ceil(kurang / waktuBulan);
+                const tabunganHari = Math.ceil(tabunganBulan / 30.44);
+                
+                labelTambahanEl.textContent = "Target Waktu:";
+                hasilTambahanEl.textContent = `${waktuBulan} Bulan`;
+                labelSatuanEl.textContent = "Perlu Menabung:";
+                hasilSatuanEl.textContent = `${formatUang(tabunganBulan)}/bulan atau ${formatUang(tabunganHari)}/hari`;
+                pesan = "🎯 Sesuaikan pengeluaranmu agar target waktu ini bisa tercapai dengan nyaman.";
+            }
+
+            pesanSaranEl.textContent = pesan;
+            hasilDiv.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+        }
+    </script>
+</body>
+</html>
